@@ -42,7 +42,34 @@ app.post("/register", async (req,res)=>{
         password : bcrypt.hashSync(password,8)
     })
 
-    res.send("user registered successfully")
+    res.redirect("/")
+})
+
+//for login user
+app.post("/login", async (req, res)=>{
+    const email = req.body.email
+    const password = req.body.password
+
+    //checking is email is exists or not
+    const userExists = await users.findAll({
+        where : {
+            email : email
+        }
+    }) 
+
+    if(userExists.length > 0){
+        
+        //checking now password
+        const isMatch = bcrypt.compareSync(password,userExists[0].password)
+       
+        if(isMatch){
+            res.send("Logged in successfully.")
+        }else{
+            res.send("Invalid password")
+        }
+    }else{
+        res.send("Please enter correct email address")
+    }
 })
 
 
